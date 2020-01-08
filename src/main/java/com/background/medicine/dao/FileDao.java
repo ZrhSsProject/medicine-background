@@ -14,6 +14,8 @@ import java.util.List;
 public interface FileDao extends JpaRepository<file,Long> {
     List<file> findByFileIDIsNotNull();
 
+    file findByFileID(int fileID);
+
     @Query(nativeQuery=true,value = "select * from file  limit ?1, ?2")
     List<file> findAll(int start,int num);
 

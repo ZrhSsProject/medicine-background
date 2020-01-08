@@ -3,12 +3,15 @@ package com.background.medicine.controller;
 import com.alibaba.fastjson.JSONArray;
 import com.background.medicine.dao.FileDao;
 import com.background.medicine.dao.fileinfoDao;
+import com.background.medicine.entity.Result;
 import com.background.medicine.entity.Users;
 import com.background.medicine.entity.file;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static com.background.medicine.controller.ReadByLine.readFile;
 
 @RestController
 @RequestMapping("")
@@ -51,6 +54,16 @@ public class MainController {
     }
 
 
+    @RequestMapping(value = "bookread/{bookid}/{page}",method = RequestMethod.GET)
+    @ResponseBody
+    public String bookread(@PathVariable int bookid,@PathVariable int page) {
+        String path = fileDao.findByFileID(bookid).getFileLocation();
+        String res = readFile(path,page);
+        Result result = new Result(res);
+        Object obj = JSONArray.toJSON(result);
+        String json = "BookReadHandler("+obj.toString()+");";
+        return json;
+    }
 }
 
 
