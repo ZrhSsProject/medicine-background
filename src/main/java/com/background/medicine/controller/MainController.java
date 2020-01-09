@@ -3,6 +3,7 @@ package com.background.medicine.controller;
 import com.alibaba.fastjson.JSONArray;
 import com.background.medicine.dao.FileDao;
 import com.background.medicine.dao.fileinfoDao;
+import com.background.medicine.entity.BookPage;
 import com.background.medicine.entity.Result;
 import com.background.medicine.entity.Users;
 import com.background.medicine.entity.file;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import static com.background.medicine.controller.ReadByLine.readFile;
+import static com.background.medicine.controller.ReadByLine.readLine;
 
 @RestController
 @RequestMapping("")
@@ -59,8 +61,9 @@ public class MainController {
     public String bookread(@PathVariable int bookid,@PathVariable int page) {
         String path = fileDao.findByFileID(bookid).getFileLocation();
         String res = readFile(path,page);
-        Result result = new Result(res);
-        Object obj = JSONArray.toJSON(result);
+        int num = readLine(path);//Redis扩展
+        BookPage bookPage = new BookPage(res,num);
+        Object obj = JSONArray.toJSON(bookPage);
         String json = "BookReadHandler("+obj.toString()+");";
         return json;
     }

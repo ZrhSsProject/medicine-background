@@ -29,15 +29,28 @@ public class ReadByLine {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        System.out.println(res);
         return res;
 
     }
 
+    public static int readLine(String filename) {
+        int num = 0;
+        try{
+            FileReader in = new FileReader(filename);
+            LineNumberReader reader = new LineNumberReader(in);
+            reader.skip(Integer.MAX_VALUE);
+            num = reader.getLineNumber();
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return  num/10;
+    }
+
     public static void main(String[] args) {
-        ReadByLine rl=new ReadByLine();
+        ReadByLine rl = new ReadByLine();
         String filename = "C:/100.txt";
-        rl.readFile(filename,1);
+//        rl.readFile(filename,1);
+        ReadByLine.readLine(filename);
     }
 }
