@@ -4,8 +4,8 @@ import java.io.*;
 import java.util.ArrayList;
 
 public class ReadByLine {
-//  每页书的行数设置10
-    public static int BOOKLINE = 10;
+    //  每页书的行数设置10
+    public static int BOOKLINE = 20;
 
     public static String readFile(String filename,int page) {
         String res = "";
@@ -17,9 +17,9 @@ public class ReadByLine {
             // 按行读取字符串
             while ((str = bf.readLine()) != null) {
                 count++;
-                if((page-1)*10+1 > count)
+                if((page-1)*20+1 > count)
                     continue;
-                else if(count <= page*10)
+                else if(count <= page*20)
                     res+=str+"</br>";
                 else
                     break;
@@ -44,7 +44,7 @@ public class ReadByLine {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return  num/10;
+        return  num/20;
     }
 
     public static void main(String[] args) {
