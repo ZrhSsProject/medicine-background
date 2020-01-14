@@ -13,7 +13,7 @@ public class BookInfoController {
     @Autowired
     fileinfoDao fileinfoDao;
 
-    @RequestMapping(value = "BookDetail/{fileID}",method = RequestMethod.GET)
+    @RequestMapping(value = "BookDetail/{fileID}",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
     @ResponseBody
     public String bookdetail(@PathVariable int fileID){//获取用户传入url的信息，配置要求，url路径变量
 

@@ -1,6 +1,5 @@
 package com.background.medicine;
 
-import com.background.medicine.controller.ReadByLine;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -10,5 +9,4 @@ public class MedicineApplication {
     public static void main(String[] args) {
         SpringApplication.run(MedicineApplication.class, args);
     }
-
 }

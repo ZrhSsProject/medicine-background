@@ -31,4 +31,9 @@ public interface FileDao extends JpaRepository<file,Long> {
     @Query(nativeQuery=true,value = "select * from file")
     List<file> findAlltest();
 
+    //根据用户查看信息
+    @Query(nativeQuery=true,value = "select * from file where cateName = (select cateID from filecategory " +
+            "where cateName = ?1) limit ?2, ?3")
+    List<file> findByCate(String cateName, int start,int num);
+
 }

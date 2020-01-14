@@ -13,7 +13,7 @@ public class IndexController {
     UsersDao usersDao;
 //这个是自动导入 用户dao    包的自动填充，针对DI 区别AOP
 
-    @RequestMapping(value = "test",method = RequestMethod.GET)
+    @RequestMapping(value = "test",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
     @ResponseBody
     public Users test(){
         Users users = new Users();
@@ -25,14 +25,14 @@ public class IndexController {
         return users;
     }
 
-    @RequestMapping(value = "find/{userName}",method = RequestMethod.GET)
+    @RequestMapping(value = "find/{userName}",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
     @ResponseBody
     public Users find(@PathVariable String userName){//获取用户传入url的信息，配置要求，url路径变量
         Users users = usersDao.findByUserName(userName);
         return users;
     }
 
-    @RequestMapping(value = "login/{userName}/{password}",method = RequestMethod.GET)
+    @RequestMapping(value = "login/{userName}/{password}",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
     @ResponseBody
     public String login(@PathVariable String userName,@PathVariable String password){
         Users users = null;
@@ -46,7 +46,7 @@ public class IndexController {
         return json;
     }
 
-    @RequestMapping(value = "register/{userName}/{password}",method = RequestMethod.GET)
+    @RequestMapping(value = "register/{userName}/{password}",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
     @ResponseBody
     public String register(@PathVariable String userName,@PathVariable String password){
         Users users = new Users();
