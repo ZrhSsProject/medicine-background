@@ -11,11 +11,13 @@ import java.util.List;
 @Repository
 @Transactional
 public interface fileinfoDao extends JpaRepository<fileinfo,Long> {
-    @Query(nativeQuery=true,value = "SELECT * FROM file f JOIN fileinfo fi USING (fileID) WHERE f.fileID=?1")
+    @Query(nativeQuery=true,value = "SELECT * FROM fileinfo WHERE fileID=?1")
     fileinfo findByFileID(int fileID);
 
 
     @Query(nativeQuery=true,value = "SELECT * FROM file f JOIN fileinfo fi USING (fileID) WHERE f.fileID=?1")
     List<Object[]> findAllByFileID(int fileID);
+
+
 
 }

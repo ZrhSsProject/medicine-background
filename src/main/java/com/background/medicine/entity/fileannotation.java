@@ -1,9 +1,16 @@
 package com.background.medicine.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name="fileannotation")
+@Getter
+@Setter
+@ToString
 public class fileannotation {
     @Id
     @GeneratedValue
@@ -17,55 +24,4 @@ public class fileannotation {
     public String originalSentence;
     @Column(name="annotationInfo")
     public String annotationInfo;
-
-    public int getAnnotationID() {
-        return annotationID;
-    }
-
-    public void setAnnotationID(int annotationID) {
-        this.annotationID = annotationID;
-    }
-
-    public int getFileID() {
-        return fileID;
-    }
-
-    public void setFileID(int fileID) {
-        this.fileID = fileID;
-    }
-
-    public int getUserID() {
-        return userID;
-    }
-
-    public void setUserID(int userID) {
-        this.userID = userID;
-    }
-
-    public String getOriginalSentence() {
-        return originalSentence;
-    }
-
-    public void setOriginalSentence(String originalSentence) {
-        this.originalSentence = originalSentence;
-    }
-
-    public String getAnnotationInfo() {
-        return annotationInfo;
-    }
-
-    public void setAnnotationInfo(String annotationInfo) {
-        this.annotationInfo = annotationInfo;
-    }
-
-    @Override
-    public String toString() {
-        return "fileannotation{" +
-                "annotationID=" + annotationID +
-                ", fileID=" + fileID +
-                ", userID=" + userID +
-                ", originalSentence='" + originalSentence + '\'' +
-                ", annotationInfo='" + annotationInfo + '\'' +
-                '}';
-    }
 }

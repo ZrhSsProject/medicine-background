@@ -1,10 +1,17 @@
 package com.background.medicine.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 import javax.persistence.*;
 
 
 @Entity
 @Table(name="filecomment")
+@Getter
+@Setter
+@ToString
 public class filecomment {
     @Id
     @GeneratedValue
@@ -18,55 +25,4 @@ public class filecomment {
     public String commentInfo;
     @Column(name="commentTime")
     public String commentTime;
-
-    public int getCommentID() {
-        return CommentID;
-    }
-
-    public void setCommentID(int commentID) {
-        CommentID = commentID;
-    }
-
-    public int getFileID() {
-        return fileID;
-    }
-
-    public void setFileID(int fileID) {
-        this.fileID = fileID;
-    }
-
-    public int getUserID() {
-        return userID;
-    }
-
-    public void setUserID(int userID) {
-        this.userID = userID;
-    }
-
-    public String getCommentInfo() {
-        return commentInfo;
-    }
-
-    public void setCommentInfo(String commentInfo) {
-        this.commentInfo = commentInfo;
-    }
-
-    public String getCommentTime() {
-        return commentTime;
-    }
-
-    public void setCommentTime(String commentTime) {
-        this.commentTime = commentTime;
-    }
-
-    @Override
-    public String toString() {
-        return "filecomment{" +
-                "CommentID=" + CommentID +
-                ", fileID=" + fileID +
-                ", userID=" + userID +
-                ", commentInfo='" + commentInfo + '\'' +
-                ", commentTime='" + commentTime + '\'' +
-                '}';
-    }
 }

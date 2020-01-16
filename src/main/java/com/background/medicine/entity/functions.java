@@ -1,9 +1,16 @@
 package com.background.medicine.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name="functions")
+@Getter
+@Setter
+@ToString
 public class functions {
     @Id
     @GeneratedValue
@@ -13,37 +20,4 @@ public class functions {
     public String functionName;
     @Column(name="functionInfo")
     public String functionInfo;
-
-    public int getFunctionID() {
-        return functionID;
-    }
-
-    public void setFunctionID(int functionID) {
-        this.functionID = functionID;
-    }
-
-    public String getFunctionName() {
-        return functionName;
-    }
-
-    public void setFunctionName(String functionName) {
-        this.functionName = functionName;
-    }
-
-    public String getFunctionInfo() {
-        return functionInfo;
-    }
-
-    public void setFunctionInfo(String functionInfo) {
-        this.functionInfo = functionInfo;
-    }
-
-    @Override
-    public String toString() {
-        return "functions{" +
-                "functionID=" + functionID +
-                ", functionName='" + functionName + '\'' +
-                ", functionInfo='" + functionInfo + '\'' +
-                '}';
-    }
 }
