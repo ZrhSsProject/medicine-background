@@ -2,6 +2,7 @@ package com.background.medicine.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.background.medicine.dao.FileDao;
+import com.background.medicine.dto.fileCount;
 import com.background.medicine.entity.BookPage;
 import com.background.medicine.entity.file;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,35 +24,89 @@ public class MainController {
     @RequestMapping(value = "Main/{start}/{num}",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
     @ResponseBody
     public String findAll(@PathVariable int start,@PathVariable int num){
-        List<file> file = fileDao.findAll(start,num);
+        List<file> file = fileDao.findAll("%",start,num);
         Object obj = JSONArray.toJSON(file);
         String json = "MainHandler("+obj.toString()+");";
         return json;
     }
 
-    @RequestMapping(value = "Cate/{cateName}/{start}/{num}",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
+    @RequestMapping(value = "Cate/{cateName}/{dynasty}/{search}/{start}/{num}",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
     @ResponseBody
-    public String findByCate(@PathVariable String cateName,@PathVariable int start,@PathVariable int num){
-        List<file> file = fileDao.findByCate(cateName,start,num);
-        Object obj = JSONArray.toJSON(file);
+    public String findByCategory(@PathVariable String cateName,@PathVariable String dynasty,
+                                 @PathVariable String search,@PathVariable int start,@PathVariable int num){
+        List<file> file =null;
+        int count=50;
+        if(search.equals("NULL"))
+            search = "%";
+        else
+            search = "%"+search+"%";
+        if(cateName.equals("全部")) {
+            if (dynasty.equals("全部")){
+                file = fileDao.findAll(search,start, num);
+                count = fileDao.countAll(search);
+            }else{
+                file = fileDao.findByDynasty(dynasty, search,start, num);
+                count = fileDao.countByDynasty(dynasty,search);
+            }
+        }else{
+            if (dynasty.equals("全部")){
+                file = fileDao.findByCate(cateName,search,start, num);
+                count = fileDao.countByCate(cateName,search);
+            }else{
+                file = fileDao.findByCateAndDynasty(cateName, dynasty, search, start, num);
+                count = fileDao.countByCateAndDynasty(cateName,dynasty, search);
+            }
+        }
+        fileCount fileCount = new fileCount(file,count);
+        Object obj = JSONArray.toJSON(fileCount);
         String json = "CateHandler("+obj.toString()+");";
         return json;
     }
 
 
-    @RequestMapping(value = "simpleSearch/{select}/{querydata}",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
+    @RequestMapping(value = "simpleSearch/{select}/{querydata}/{start}/{num}",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
     @ResponseBody
-    public String simpleSearch(@PathVariable String select,@PathVariable String querydata) {
+    public String simpleSearch(@PathVariable String select,@PathVariable String querydata,@PathVariable int start,@PathVariable int num) {
         List<file> file =null;
+        int count= 0;
         if(select.equals("书名")){
-            file= fileDao.findByNames(querydata);}
+            count = fileDao.countByName(querydata);
+            file= fileDao.findByNames("%"+querydata+"%",start,num);}
         else if(select.equals("作者")){
-            file= fileDao.findByAuthor(querydata);
+            count = fileDao.countByAuthor(querydata);
+            file= fileDao.findByAuthor("%"+querydata+"%",start,num);
+        }else if(select.equals("全部")){
+            file = fileDao.findAll("%"+querydata+"%",start,num);
+            count = fileDao.countAll("%"+querydata+"%");
         }
-        Object obj= JSONArray.toJSON(file);
+        fileCount fileCount = new fileCount(file,count);
+        Object obj= JSONArray.toJSON(fileCount);
         String json = "simplesearchHandler(" + obj.toString() + ");";
         return json;
 
+    }
+
+    @RequestMapping(value = "advancedSearch/{fileName}/{author}/{translator}/{bookNumber}/{cateName}/{press}/{age1}/{age2}/{start}/{num}",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
+    @ResponseBody
+    public String advancedSearch(@PathVariable String fileName, @PathVariable String author, @PathVariable String translator, @PathVariable String bookNumber,
+                               @PathVariable String cateName, @PathVariable String press, @PathVariable int age1, @PathVariable int age2, @PathVariable int start, @PathVariable int num){
+        List<file> file =null;
+        int count= 0;
+
+        fileName = fileName.equals("NULL") ? "%%" : fileName;
+        author = author.equals("NULL") ? "%%" : author;
+        translator = translator.equals("NULL") ? "%%" : translator;
+        bookNumber = bookNumber.equals("NULL") ? "%%" : bookNumber;
+        cateName = cateName.equals("NULL") ? "%%" : cateName;
+        press = press.equals("NULL") ? "%%" : press;
+
+        file = fileDao.advancedSearch(fileName,author,translator,bookNumber,cateName,press,age1,age2,start,num);
+        count = fileDao.countAdvanced(fileName,author,translator,bookNumber,cateName,press,age1,age2);
+
+        fileCount fileCount = new fileCount(file,count);
+        Object obj= JSONArray.toJSON(fileCount);
+        String json = "advancedsearchHandler(" + obj.toString() + ");";
+        return json;
     }
 
     //indextest中的datatable应用

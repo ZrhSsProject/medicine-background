@@ -1,8 +1,6 @@
 package com.background.medicine.entity;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -21,8 +19,18 @@ public class filecomment {
     public int fileID;
     @Column(name="userID")
     public int userID;
-    @Column(name="commentInfo")
-    public String commentInfo;
+    @Column(name="title")
+    public String title;
+    @Column(name="content")
+    public String content;
     @Column(name="commentTime")
     public String commentTime;
+
+    public filecomment(int fileID, int userID, String title, String content, String commentTime) {
+        this.fileID = fileID;
+        this.userID = userID;
+        this.title = title;
+        this.content = content;
+        this.commentTime = commentTime;
+    }
 }
