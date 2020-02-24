@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import static com.background.medicine.controller.ReadBook.*;
-import static com.background.medicine.controller.ReadByLine.readFile;
-import static com.background.medicine.controller.ReadByLine.readLine;
 
 
 @RestController
@@ -29,6 +27,16 @@ public class MainController {
         String json = "MainHandler("+obj.toString()+");";
         return json;
     }
+
+    @RequestMapping(value = "findbook/{fileID}",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
+    @ResponseBody
+    public String findAll(@PathVariable int fileID){
+        file file = fileDao.findByFileID(fileID);
+        Object obj = JSONArray.toJSON(file);
+        String json = "findbookHandler("+obj.toString()+");";
+        return json;
+    }
+
 
     @RequestMapping(value = "Cate/{cateName}/{dynasty}/{search}/{start}/{num}",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
     @ResponseBody
@@ -93,12 +101,12 @@ public class MainController {
         List<file> file =null;
         int count= 0;
 
-        fileName = fileName.equals("NULL") ? "%%" : fileName;
-        author = author.equals("NULL") ? "%%" : author;
-        translator = translator.equals("NULL") ? "%%" : translator;
-        bookNumber = bookNumber.equals("NULL") ? "%%" : bookNumber;
-        cateName = cateName.equals("NULL") ? "%%" : cateName;
-        press = press.equals("NULL") ? "%%" : press;
+        fileName = fileName.equals("NULL") ? "%%" : "%"+fileName+"%";
+        author = author.equals("NULL") ? "%%" : "%"+author+"%";
+        translator = translator.equals("NULL") ? "%%" : "%"+translator+"%";
+        bookNumber = bookNumber.equals("NULL") ? "%%" : "%"+bookNumber+"%";
+        cateName = cateName.equals("NULL") ? "%%" : "%"+cateName+"%";
+        press = press.equals("NULL") ? "%%" : "%"+press+"%";
 
         file = fileDao.advancedSearch(fileName,author,translator,bookNumber,cateName,press,age1,age2,start,num);
         count = fileDao.countAdvanced(fileName,author,translator,bookNumber,cateName,press,age1,age2);
@@ -133,11 +141,11 @@ public class MainController {
 //    }
 
     //produces="application/json;charset=UTF-8"  处理返回的json中文乱码
-    @RequestMapping(value = "bookhandle/{bookid}/{page}",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
+    @RequestMapping(value = "bookhandle/{userid}/{bookid}/{page}",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
     @ResponseBody
-    public String bookhandle(@PathVariable int bookid,@PathVariable int page) {
+    public String bookhandle(@PathVariable int userid,@PathVariable int bookid,@PathVariable int page) {
         String path = fileDao.findByFileID(bookid).getFileLocation();
-        String res = readTxtFile(path+"\\txt\\",page);
+        String res = readTxtFile(path+"\\txt\\",userid,bookid,page);
         String url = readTIF(path+"\\tif\\",page);
         int num = readNum(path+"\\txt\\");//Redis扩展
         BookPage bookPage = new BookPage(res,url,num);

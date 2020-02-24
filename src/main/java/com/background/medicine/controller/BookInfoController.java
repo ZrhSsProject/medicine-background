@@ -1,11 +1,9 @@
 package com.background.medicine.controller;
 
 import com.alibaba.fastjson.JSONArray;
-import com.background.medicine.dao.filecommentDao;
-import com.background.medicine.dao.fileinfoDao;
-import com.background.medicine.entity.Result;
-import com.background.medicine.entity.filecomment;
-import com.background.medicine.entity.fileinfo;
+import com.background.medicine.dao.*;
+import com.background.medicine.dto.onefilecommentCount;
+import com.background.medicine.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,42 +16,33 @@ import java.util.List;
 public class BookInfoController {
 
     @Autowired
+    FileDao fileDao;
+
+    @Autowired
     fileinfoDao fileinfoDao;
 
     @Autowired
     filecommentDao filecommentDao;
 
+    @Autowired
+    mybooksDao mybooksDao;
 
+    @Autowired
+    mynoteDao mynoteDao;
 
-    @RequestMapping(value = "BookDetail/{fileID}",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
+    @RequestMapping(value = "BookDetail/{fileID}/{userID}",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
     @ResponseBody
-    public String bookdetail(@PathVariable int fileID){//获取用户传入url的信息，配置要求，url路径变量
+    public String bookdetail(@PathVariable int fileID,@PathVariable int userID) {//获取用户传入url的信息，配置要求，url路径变量
 
         fileinfo fileinfo = fileinfoDao.findByFileID(fileID);
-        Object obj = JSONArray.toJSON(fileinfo);
-        String json = "BookDetailHandler("+obj.toString()+");";
-        return json;
-    }
+        List<filecomment> filecomment = filecommentDao.findByFileID(fileID);
+        int count = filecommentDao.countByFileID(fileID);
 
-    @RequestMapping(value = "CommentAdd/{fileID}/{userID}/{title}/{content}",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
-    @ResponseBody
-    public String commenadd(@PathVariable int fileID,@PathVariable int userID,
-                            @PathVariable String title,@PathVariable String content){
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String now = df.format(new Date());
-        filecomment filecomment = new filecomment(fileID,userID,title,content,now);
-        filecomment res = filecommentDao.save(filecomment);
-        Object obj = JSONArray.toJSON(res);
-        String json = "CommentAddHandler("+obj.toString()+");";
-        return json;
-    }
+        List<mynote> mynotes = mynoteDao.findByUserIDAndFileID(userID,fileID);
+        onefilecommentCount oc = new onefilecommentCount(filecomment,mynotes,fileinfo,count);
 
-    @RequestMapping(value = "CommentGet/{fileID}",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
-    @ResponseBody
-    public String commentget(@PathVariable int fileID){
-        List<filecomment> file = filecommentDao.findByFileID(fileID);
-        Object obj = JSONArray.toJSON(file);
-        String json = "CommentAddHandler("+obj.toString()+");";
+        Object obj = JSONArray.toJSON(oc);
+        String json = "BookDetailHandler(" + obj.toString() + ");";
         return json;
     }
 }

@@ -74,11 +74,10 @@ public interface FileDao extends JpaRepository<file,Long> {
     List<file> advancedSearch(String fileName, String author, String translator, String bookNumber,
                                     String cateName, String press, int age1, int age2, int start, int num);
 
-//  检索音乐
+//  检索
     @Query(nativeQuery=true,value = "select count(1) from file f join filedynasty d on f.dynasty=d.dynasty where fileName like ?1 and author like ?2 " +
             "and translator like ?3 and bookNumber like ?4 and cateName like ?5 and press like ?6 " +
             "and value >= ?7 and value <= ?8")
     int countAdvanced(String fileName, String author, String translator, String bookNumber,
                               String cateName, String press, int age1, int age2);
-
 }

@@ -12,7 +12,6 @@ import javax.persistence.*;
 @ToString
 public class filecomment {
     @Id
-    @GeneratedValue
     @Column(name="CommentID")
     public int CommentID;
     @Column(name="fileID")
@@ -26,11 +25,24 @@ public class filecomment {
     @Column(name="commentTime")
     public String commentTime;
 
-    public filecomment(int fileID, int userID, String title, String content, String commentTime) {
+    @Column(name="fileName")
+    public String fileName = "";
+
+    @Column(name="userName")
+    public String userName = "";
+
+    public filecomment(){
+
+    }
+
+    public filecomment(int fileID, int userID, String title, String content, String commentTime, String fileName,String userName
+    ) {
         this.fileID = fileID;
         this.userID = userID;
         this.title = title;
         this.content = content;
         this.commentTime = commentTime;
+        this.fileName = fileName;
+        this.userName = userName;
     }
 }
