@@ -46,11 +46,12 @@ public class IndexController {
         return json;
     }
 
-    @RequestMapping(value = "register/{userName}/{password}",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
+    @RequestMapping(value = "register/{userName}/{email}/{password}",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
     @ResponseBody
-    public String register(@PathVariable String userName,@PathVariable String password){
+    public String register(@PathVariable String userName,@PathVariable String email,@PathVariable String password){
         Users users = new Users();
         users.setUserName(userName);
+        users.setEmail(email);
         users.setPassword(password);
         //外键约束
         users.setRoleID(1);

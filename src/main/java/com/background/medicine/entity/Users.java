@@ -14,14 +14,15 @@ import javax.persistence.*;
 @ToString
 public class Users {
     @Id
-    @GeneratedValue
-//    主键自增长设置
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "userID")
     public int userID;
     @Column(name = "userName")
     public String userName;
     @Column(name = "password")
     public String password;
+    @Column(name = "email")
+    public String email;
     @Column(name = "roleID")
     public int roleID;
     @Column(name = "department")

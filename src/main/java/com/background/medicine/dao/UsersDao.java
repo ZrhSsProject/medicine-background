@@ -14,6 +14,12 @@ import java.util.List;
 @Repository
 @Transactional
 public interface UsersDao extends JpaRepository<Users,Long> {
+    @Query(nativeQuery=true,value = "select * from users limit ?1, ?2")
+    List<Users> findAll(int start, int num);
+
+    @Query(nativeQuery=true,value = "select count(1) from users")
+    int countAll();
+
     //根据用户名查找信息
     Users findByUserName(String username);
     //根据部门查找用户
@@ -23,4 +29,12 @@ public interface UsersDao extends JpaRepository<Users,Long> {
     //自定制sql
     @Query("select userName from Users where userName = ?1")
     List<String> findByNames(String userName);
+
+    @Query(nativeQuery=true,value = "delete from users where userID = ?1")
+    @Modifying
+    int deleteByuserID(int userID);
+
+    @Query(nativeQuery=true,value = "update users set roleID = ?1 where userID = ?2")
+    @Modifying
+    int modifyByuserID(int roleID,int userID);
 }

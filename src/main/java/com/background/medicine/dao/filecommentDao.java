@@ -22,10 +22,20 @@ public interface filecommentDao extends JpaRepository<filecomment,Long> {
             "limit ?2, ?3")
     List<filecomment> findByUser(int userID, int start, int num);
 
+    @Query(nativeQuery=true,value = "select * from filecomment limit ?1, ?2")
+    List<filecomment> findAll(int start, int num);
+
+    @Query(nativeQuery=true,value = "select count(1) from filecomment")
+    int countAll();
+
     @Query(nativeQuery=true,value = "select count(1) from filecomment where userID = ?1 ")
     int countByUser(int userID);
 
     @Query(nativeQuery=true,value = "delete from filecomment where commentID = ?1 ")
     @Modifying
     int deleteBycommentID(int commentID);
+
+    @Query(nativeQuery=true,value = "delete from filecomment where title like ?1 or content like ?1 ")
+    @Modifying
+    int deleteBycontent(String content);
 }
