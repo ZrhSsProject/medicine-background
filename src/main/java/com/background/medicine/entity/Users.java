@@ -1,5 +1,6 @@
 package com.background.medicine.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -12,6 +13,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @ToString
+@AllArgsConstructor
 public class Users {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,4 +29,15 @@ public class Users {
     public int roleID;
     @Column(name = "department")
     public String department;
+
+    public Users(){
+
+    }
+
+    public Users(String userName, String password, String email, int roleID) {
+        this.userName = userName;
+        this.password = password;
+        this.email = email;
+        this.roleID = roleID;
+    }
 }

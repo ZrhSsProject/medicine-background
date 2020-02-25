@@ -20,6 +20,9 @@ public interface UsersDao extends JpaRepository<Users,Long> {
     @Query(nativeQuery=true,value = "select count(1) from users")
     int countAll();
 
+    @Query(nativeQuery=true,value = "select count(1) from users where userName = ?1")
+    int countByUser(String userName);
+
     //根据用户名查找信息
     Users findByUserName(String username);
     //根据部门查找用户

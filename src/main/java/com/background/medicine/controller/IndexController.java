@@ -2,15 +2,23 @@ package com.background.medicine.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.background.medicine.dao.UsersDao;
+import com.background.medicine.dao.dayclickDao;
 import com.background.medicine.entity.Users;
+import com.background.medicine.entity.dayclick;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @RestController
 @RequestMapping("")
 public class IndexController {
     @Autowired
     UsersDao usersDao;
+
+    @Autowired
+    dayclickDao dayclickDao;
 //这个是自动导入 用户dao    包的自动填充，针对DI 区别AOP
 
     @RequestMapping(value = "test",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
@@ -40,6 +48,14 @@ public class IndexController {
         if(users == null){
             users = new Users();
             users.setUserName("用户名不存在");
+        }else{
+            Date date = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            String day = sdf.format(date);
+            if(dayclickDao.countday(day) == 1)
+                dayclickDao.updateday(day);
+            else
+                dayclickDao.save(new dayclick(1,day));
         }
         Object obj = JSONArray.toJSON(users);
         String json = "LoginHandler("+obj.toString()+");";

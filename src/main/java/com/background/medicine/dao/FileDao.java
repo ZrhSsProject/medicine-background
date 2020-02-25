@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Map;
 
 //这里是配置sql语句
 @Repository
@@ -80,4 +81,9 @@ public interface FileDao extends JpaRepository<file,Long> {
             "and value >= ?7 and value <= ?8")
     int countAdvanced(String fileName, String author, String translator, String bookNumber,
                               String cateName, String press, int age1, int age2);
+
+//每日书籍种类
+    @Query(nativeQuery=true,value = "select cateName, count(1) num from file group by cateName")
+    List<Map<String,Integer>> daybook();
+
 }

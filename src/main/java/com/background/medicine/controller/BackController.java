@@ -5,14 +5,24 @@ import com.background.medicine.dao.*;
 import com.background.medicine.dto.filecommentCount;
 import com.background.medicine.dto.onefilecommentCount;
 import com.background.medicine.dto.userCount;
-import com.background.medicine.entity.Users;
-import com.background.medicine.entity.filecomment;
-import com.background.medicine.entity.fileinfo;
-import com.background.medicine.entity.mynote;
+import com.background.medicine.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("")
@@ -35,6 +45,15 @@ public class BackController {
 
     @Autowired
     UsersDao usersDao;
+
+    @Autowired
+    dayclickDao dayclickDao;
+
+    @Autowired
+    todayhotDao todayhotDao;
+
+    @Autowired
+    hotphraseDao hotphraseDao;
 
     @RequestMapping(value = "userManage/{start}/{num}",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
     @ResponseBody
@@ -101,6 +120,88 @@ public class BackController {
         Users users1 = usersDao.save(users);
         Object obj = JSONArray.toJSON(users1.userName.length());
         String json = "addUserHandler(" + obj.toString() + ");";
+        return json;
+    }
+
+    @RequestMapping(value = "uploadFile/{remove}", method = RequestMethod.POST)
+    public String uploadFile(@PathVariable int remove, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+        MultipartHttpServletRequest multipartRequest=(MultipartHttpServletRequest) request;
+        MultipartFile multipartFile = multipartRequest.getFile("file1");//file是form-data中二进制字段对应的name
+        Reader reader = null;
+        String line;
+        try {
+            reader = new InputStreamReader(multipartFile.getInputStream(), "utf-8");
+            BufferedReader br = new BufferedReader(reader);
+            if(remove == 1)
+                br.readLine();
+            while ((line = br.readLine()) != null) {
+                System.out.println(line);
+                String[] info = line.split("\t");
+                if(usersDao.countByUser(info[0]) == 0) {
+                    Users users = new Users(info[0], info[1], info[2], Integer.valueOf(info[3]));
+                    usersDao.save(users);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return " ";
+    }
+
+    @RequestMapping(value = "getDay",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
+    @ResponseBody
+    public String getDay() {
+        List<dayclick> dayclicks = dayclickDao.findday();
+        Object obj = JSONArray.toJSON(dayclicks);
+        String json = "getDayHandler(" + obj.toString() + ");";
+        return json;
+    }
+
+    @RequestMapping(value = "getHot",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
+    @ResponseBody
+    public String gethot() {
+        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String day = sdf.format(date);
+        List<todayhot> todayhot = todayhotDao.findday(day);
+        Object obj = JSONArray.toJSON(todayhot);
+        String json = "getHotHandler(" + obj.toString() + ");";
+        return json;
+    }
+
+    @RequestMapping(value = "addHot/{fileID}/{fileName}",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
+    @ResponseBody
+    public String addHot(@PathVariable int fileID,@PathVariable String fileName) {
+        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String day = sdf.format(date);
+        if(todayhotDao.countday(fileID,day) == 1)
+            todayhotDao.updateday(fileID,day);
+        else
+            todayhotDao.save(new todayhot(fileID,fileName,1,day));
+        Object obj = JSONArray.toJSON(1);
+        String json = "addHotHandler(" + obj.toString() + ");";
+        return json;
+    }
+
+    @RequestMapping(value = "getPhrase",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
+    @ResponseBody
+    public String getPhrase() {
+        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String day = sdf.format(date);
+        List<hotphrase> hotphrase = hotphraseDao.findday(day);
+        Object obj = JSONArray.toJSON(hotphrase);
+        String json = "getPhraseHandler(" + obj.toString() + ");";
+        return json;
+    }
+
+    @RequestMapping(value = "getBook",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
+    @ResponseBody
+    public String getBook() {
+        List<Map<String,Integer>> res = fileDao.daybook();
+        Object obj = JSONArray.toJSON(res);
+        String json = "getBookHandler(" + obj.toString() + ");";
         return json;
     }
 }

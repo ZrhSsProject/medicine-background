@@ -2,12 +2,16 @@ package com.background.medicine.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.background.medicine.dao.FileDao;
+import com.background.medicine.dao.hotphraseDao;
 import com.background.medicine.dto.fileCount;
 import com.background.medicine.entity.BookPage;
 import com.background.medicine.entity.file;
+import com.background.medicine.entity.hotphrase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import static com.background.medicine.controller.ReadBook.*;
@@ -18,6 +22,9 @@ import static com.background.medicine.controller.ReadBook.*;
 public class MainController {
     @Autowired
     FileDao fileDao;
+    
+    @Autowired
+    hotphraseDao hotphraseDao;
 
     @RequestMapping(value = "Main/{start}/{num}",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
     @ResponseBody
@@ -46,8 +53,17 @@ public class MainController {
         int count=50;
         if(search.equals("NULL"))
             search = "%";
-        else
+        else{
+            Date date = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            String day = sdf.format(date);
+            if(hotphraseDao.countday(search,day) == 1)
+                hotphraseDao.updateday(search,day);
+            else
+                hotphraseDao.save(new hotphrase(search,1,day));
             search = "%"+search+"%";
+        }
+
         if(cateName.equals("全部")) {
             if (dynasty.equals("全部")){
                 file = fileDao.findAll(search,start, num);
@@ -77,6 +93,15 @@ public class MainController {
     public String simpleSearch(@PathVariable String select,@PathVariable String querydata,@PathVariable int start,@PathVariable int num) {
         List<file> file =null;
         int count= 0;
+
+        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String day = sdf.format(date);
+        if(hotphraseDao.countday(querydata,day) == 1)
+            hotphraseDao.updateday(querydata,day);
+        else
+            hotphraseDao.save(new hotphrase(querydata,1,day));
+        
         if(select.equals("书名")){
             count = fileDao.countByName(querydata);
             file= fileDao.findByNames("%"+querydata+"%",start,num);}
