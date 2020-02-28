@@ -35,6 +35,10 @@ public interface filecommentDao extends JpaRepository<filecomment,Long> {
     @Modifying
     int deleteBycommentID(int commentID);
 
+    @Query(nativeQuery=true,value = "select userID from filecomment where title like ?1 or content like ?1 ")
+    @Modifying
+    List<Integer> finddelete(String content);
+
     @Query(nativeQuery=true,value = "delete from filecomment where title like ?1 or content like ?1 ")
     @Modifying
     int deleteBycontent(String content);

@@ -6,6 +6,7 @@ import com.background.medicine.dto.filecommentCount;
 import com.background.medicine.dto.onefilecommentCount;
 import com.background.medicine.dto.userCount;
 import com.background.medicine.entity.*;
+import com.background.medicine.utils.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,6 +28,8 @@ import java.util.Map;
 @RestController
 @RequestMapping("")
 public class BackController {
+    @Autowired
+    RedisUtil redisUtil;
 
     @Autowired
     FileDao fileDao;
@@ -59,7 +62,14 @@ public class BackController {
     @ResponseBody
     public String userManage(@PathVariable int start,@PathVariable int num) {
         List<Users> users = usersDao.findAll(start,num);
-        int count = usersDao.countAll();
+        int count = 0;
+        if(redisUtil.get("AllUser") != null)
+            count = (int) redisUtil.get("AllUser");
+        else{
+            count = usersDao.countAll();
+            redisUtil.set("AllUser",count,1200);
+        }
+
         userCount userCount = new userCount(users,count);
         Object obj = JSONArray.toJSON(userCount);
         String json = "userManageHandler(" + obj.toString() + ");";
@@ -70,6 +80,7 @@ public class BackController {
     @ResponseBody
     public String userManage(@PathVariable int userID) {
         int res = usersDao.deleteByuserID(userID);
+        redisUtil.del("AllUser");
         Object obj = JSONArray.toJSON(res);
         String json = "userDeleteHandler(" + obj.toString() + ");";
         return json;
@@ -89,9 +100,15 @@ public class BackController {
     public String commeninfo(@PathVariable int start,
                              @PathVariable int num){
         List<filecomment> filecomment = null;
-        int count = 0;
         filecomment = filecommentDao.findAll(start,num);
-        count = filecommentDao.countAll();
+        int count = 0;
+        if(redisUtil.get("AllComment") != null)
+            count = (int) redisUtil.get("AllComment");
+        else{
+            count = filecommentDao.countAll();
+            redisUtil.set("AllComment",count,1200);
+        }
+
         filecommentCount fc = new filecommentCount(filecomment,count);
         Object obj = JSONArray.toJSON(fc);
         String json = "CommentAllHandler("+obj.toString()+");";
@@ -102,7 +119,11 @@ public class BackController {
     @ResponseBody
     public String userManage(@PathVariable String content) {
         content = "%"+content+"%";
+        List<Integer> users = filecommentDao.finddelete(content);
+        for(int i=0;i<users.size();i++)
+            redisUtil.del(users.get(i)+"Comment");
         int res = filecommentDao.deleteBycontent(content);
+        redisUtil.del("AllComment");
         Object obj = JSONArray.toJSON(res);
         String json = "searchDeleteHandler(" + obj.toString() + ");";
         return json;

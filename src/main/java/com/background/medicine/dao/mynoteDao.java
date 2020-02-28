@@ -26,5 +26,5 @@ public interface mynoteDao extends JpaRepository<mynote,Long> {
 
     @Query(nativeQuery=true,value = "delete from mynote where noteID = ?1")
     @Modifying
-    int deleteByfileIDAnduserID(int noteID);
+    int deleteBynoteID(int noteID);
 }

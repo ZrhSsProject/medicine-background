@@ -7,6 +7,7 @@ import com.background.medicine.dto.fileCount;
 import com.background.medicine.entity.BookPage;
 import com.background.medicine.entity.file;
 import com.background.medicine.entity.hotphrase;
+import com.background.medicine.utils.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +22,9 @@ import static com.background.medicine.controller.ReadBook.*;
 @RequestMapping("")
 public class MainController {
     @Autowired
+    RedisUtil redisUtil;
+
+    @Autowired
     FileDao fileDao;
     
     @Autowired
@@ -29,7 +33,14 @@ public class MainController {
     @RequestMapping(value = "Main/{start}/{num}",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
     @ResponseBody
     public String findAll(@PathVariable int start,@PathVariable int num){
-        List<file> file = fileDao.findAll("%",start,num);
+        List<file> file = null;
+        if(start == 0 && redisUtil.get("HotMain")!=null){
+            file = (List<com.background.medicine.entity.file>) redisUtil.get("HotMain");
+        }else {
+            file = fileDao.findAll("%", start, num);
+            if (start == 0)
+                redisUtil.set("HotMain", file, 3600);
+        }
         Object obj = JSONArray.toJSON(file);
         String json = "MainHandler("+obj.toString()+");";
         return json;

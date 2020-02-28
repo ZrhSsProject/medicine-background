@@ -4,16 +4,17 @@ import com.alibaba.fastjson.JSONArray;
 import com.background.medicine.dao.*;
 import com.background.medicine.dto.onefilecommentCount;
 import com.background.medicine.entity.*;
+import com.background.medicine.utils.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 @RestController
 @RequestMapping("")
 public class BookInfoController {
+    @Autowired
+    RedisUtil redisUtil;
 
     @Autowired
     FileDao fileDao;
@@ -36,8 +37,12 @@ public class BookInfoController {
 
         fileinfo fileinfo = fileinfoDao.findByFileID(fileID);
         List<filecomment> filecomment = filecommentDao.findByFileID(fileID);
-        int count = filecommentDao.countByFileID(fileID);
-
+        int count =0;
+        if(redisUtil.get(fileID+"Book") != null){
+            count = (int) redisUtil.get(fileID+"Book");
+        }else {
+            count = filecommentDao.countByFileID(fileID);
+        }
         List<mynote> mynotes = mynoteDao.findByUserIDAndFileID(userID,fileID);
         onefilecommentCount oc = new onefilecommentCount(filecomment,mynotes,fileinfo,count);
 
