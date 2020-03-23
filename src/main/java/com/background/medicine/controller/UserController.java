@@ -58,7 +58,7 @@ public class UserController {
 
     @RequestMapping(value = "CommentAdd/{fileID}/{userID}/{title}/{content}/{fileName}/{userName}",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
     @ResponseBody
-    public String commenadd(@PathVariable int fileID,@PathVariable int userID,
+    public synchronized String commenadd(@PathVariable int fileID,@PathVariable int userID,
                             @PathVariable String title,@PathVariable String content,
                             @PathVariable String fileName,@PathVariable String userName){
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -82,7 +82,7 @@ public class UserController {
 
     @RequestMapping(value = "CommentDelete/{commentID}/{userID}",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
     @ResponseBody
-    public String commeninfo(@PathVariable int commentID,@PathVariable int userID){
+    public synchronized String commeninfo(@PathVariable int commentID,@PathVariable int userID){
         int res = 0;
         res = filecommentDao.deleteBycommentID(commentID);
         redisUtil.del(userID+"Comment");
@@ -94,7 +94,7 @@ public class UserController {
 
     @RequestMapping(value = "addbook/{fileID}/{fileName}/{userID}",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
     @ResponseBody
-    public String addbook(@PathVariable int fileID,@PathVariable String fileName,@PathVariable int userID){
+    public synchronized String addbook(@PathVariable int fileID,@PathVariable String fileName,@PathVariable int userID){
         int exists =mybooksDao.GetByFileIDAndUserID(fileID,userID);
         mybooks mybooks = new mybooks();
         mybooks val = null;
@@ -117,7 +117,7 @@ public class UserController {
 
     @RequestMapping(value = "bookDelete/{fileID}/{userID}",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
     @ResponseBody
-    public String bookDelete(@PathVariable int fileID, @PathVariable int userID){
+    public synchronized String bookDelete(@PathVariable int fileID, @PathVariable int userID){
         int res = 0;
         res = mybooksDao.deleteByfileIDAnduserID(fileID,userID);
         redisUtil.del(userID+"mybook");
@@ -149,7 +149,7 @@ public class UserController {
 
     @RequestMapping(value = "addnote/{fileID}/{userID}/{fileName}/{select}/{content}",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
     @ResponseBody
-    public String addnote(@PathVariable int fileID,@PathVariable int userID,@PathVariable String fileName,@PathVariable String select,@PathVariable String content){
+    public synchronized String addnote(@PathVariable int fileID,@PathVariable int userID,@PathVariable String fileName,@PathVariable String select,@PathVariable String content){
         mynote mynote = new mynote(fileID,fileName,userID,select,content);
         mynote res = mynoteDao.save(mynote);
         redisUtil.del(userID+"mynote");
@@ -160,7 +160,7 @@ public class UserController {
 
     @RequestMapping(value = "savenote",method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
-    public void savenote(@RequestBody noteInfo noteInfo){
+    public synchronized void savenote(@RequestBody noteInfo noteInfo){
         savetxtFile(noteInfo.info,noteInfo.users,noteInfo.files,noteInfo.pages);
     }
 
@@ -204,7 +204,7 @@ public class UserController {
 
     @RequestMapping(value = "noteDelete/{noteID}/{userID}",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
     @ResponseBody
-    public String noteDelete(@PathVariable int noteID, @PathVariable int userID){
+    public synchronized String noteDelete(@PathVariable int noteID, @PathVariable int userID){
         int res = 0;
         res = mynoteDao.deleteBynoteID(noteID);
         redisUtil.del(userID+"mynote");

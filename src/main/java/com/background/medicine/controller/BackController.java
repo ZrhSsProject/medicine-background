@@ -28,6 +28,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("")
 public class BackController {
+
     @Autowired
     RedisUtil redisUtil;
 
@@ -78,8 +79,9 @@ public class BackController {
 
     @RequestMapping(value = "userDelete/{userID}",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
     @ResponseBody
-    public String userManage(@PathVariable int userID) {
-        int res = usersDao.deleteByuserID(userID);
+    public synchronized String userManage(@PathVariable int userID) {
+        int res = 0;
+        res = usersDao.deleteByuserID(userID);
         redisUtil.del("AllUser");
         Object obj = JSONArray.toJSON(res);
         String json = "userDeleteHandler(" + obj.toString() + ");";
@@ -88,7 +90,8 @@ public class BackController {
 
     @RequestMapping(value = "userModify/{userID}/{roleID}",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
     @ResponseBody
-    public String userModify(@PathVariable int userID,@PathVariable int roleID) {
+    public synchronized String userModify(@PathVariable int userID,@PathVariable int roleID) {
+
         int res = usersDao.modifyByuserID(roleID,userID);
         Object obj = JSONArray.toJSON(res);
         String json = "userModifyHandler(" + obj.toString() + ");";
@@ -117,7 +120,7 @@ public class BackController {
 
     @RequestMapping(value = "searchDelete/{content}",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
     @ResponseBody
-    public String userManage(@PathVariable String content) {
+    public synchronized String userManage(@PathVariable String content) {
         content = "%"+content+"%";
         List<Integer> users = filecommentDao.finddelete(content);
         for(int i=0;i<users.size();i++)
@@ -131,8 +134,9 @@ public class BackController {
 
     @RequestMapping(value = "addUser/{username}/{email}/{password}/{roleID}",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
     @ResponseBody
-    public String userManage(@PathVariable String username,@PathVariable String email,
+    public synchronized String userManage(@PathVariable String username,@PathVariable String email,
                              @PathVariable String password,@PathVariable int roleID) {
+
         Users users = new Users();
         users.setUserName(username);
         users.setEmail(email);
@@ -192,7 +196,7 @@ public class BackController {
 
     @RequestMapping(value = "addHot/{fileID}/{fileName}",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
     @ResponseBody
-    public String addHot(@PathVariable int fileID,@PathVariable String fileName) {
+    public synchronized String addHot(@PathVariable int fileID,@PathVariable String fileName) {
         Date date = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String day = sdf.format(date);

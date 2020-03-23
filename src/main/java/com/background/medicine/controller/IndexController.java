@@ -64,7 +64,7 @@ public class IndexController {
 
     @RequestMapping(value = "register/{userName}/{email}/{password}",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
     @ResponseBody
-    public String register(@PathVariable String userName,@PathVariable String email,@PathVariable String password){
+    public synchronized String register(@PathVariable String userName,@PathVariable String email,@PathVariable String password){
         Users users = new Users();
         users.setUserName(userName);
         users.setEmail(email);
