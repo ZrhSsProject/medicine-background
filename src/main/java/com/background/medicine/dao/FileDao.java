@@ -1,5 +1,6 @@
 package com.background.medicine.dao;
 
+import com.background.medicine.dto.fileidAndName;
 import com.background.medicine.entity.file;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -85,5 +86,12 @@ public interface FileDao extends JpaRepository<file,Long> {
 //每日书籍种类
     @Query(nativeQuery=true,value = "select cateName, count(1) num from file group by cateName")
     List<Map<String,Integer>> daybook();
+
+//   书籍三元组
+    @Query(nativeQuery=true,value = "select fileID,author from file where fileName=?1 ")
+    Map<Integer,String> bookauthor(String fileName);
+
+    @Query(nativeQuery=true,value = "select fileID,fileName from file where author= ?1 and fileName!=?2 ")
+    List<Map<Integer,String>> bookrelate(String author,String fileName);
 
 }

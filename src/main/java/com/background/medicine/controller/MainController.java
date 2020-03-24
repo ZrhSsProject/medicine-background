@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.background.medicine.dao.FileDao;
 import com.background.medicine.dao.hotphraseDao;
 import com.background.medicine.dto.fileCount;
+import com.background.medicine.dto.fileidAndName;
+import com.background.medicine.dto.searchView;
 import com.background.medicine.entity.BookPage;
 import com.background.medicine.entity.file;
 import com.background.medicine.entity.hotphrase;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import static com.background.medicine.controller.ReadBook.*;
 
@@ -187,6 +190,18 @@ public class MainController {
         BookPage bookPage = new BookPage(res,url,num);
         Object obj = JSONArray.toJSON(bookPage);
         String json = "BookHandleHandler("+obj.toString()+");";
+        return json;
+    }
+
+    @RequestMapping(value = "searchview/{filename}",method = RequestMethod.GET, produces="application/json;charset=UTF-8")
+    @ResponseBody
+    public String searchview(@PathVariable String filename) {
+        Map<Integer,String> val = fileDao.bookauthor(filename);
+        String author = val.get("author");
+        List<Map<Integer,String>> res = fileDao.bookrelate(author,filename);
+        searchView sv = new searchView(filename,val,res);
+        Object obj = JSONArray.toJSON(sv);
+        String json = "searchviewHandler("+obj.toString()+");";
         return json;
     }
 }
